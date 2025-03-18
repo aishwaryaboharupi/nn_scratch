@@ -89,3 +89,18 @@ for epoch in range(epochs):
         print(f"Epoch {epoch+1}/{epochs}, Loss: {loss:.4f}")
 
 print("Training Complete!")
+
+import matplotlib.pyplot as plt
+
+# Generate multiple test samples
+X_test = np.linspace(0, 1, 100).reshape(-1, 2)  # Generate test values
+A1_test, y_pred_test = forward_propagation(X_test)  # Get predictions
+
+# Plot actual vs. predicted values
+plt.plot(y_pred_test, label="Predicted", linestyle="dashed")
+plt.scatter(range(len(y_sample)), y_sample, color="red", label="Actual")  # True values
+plt.legend()
+plt.xlabel("Sample Index")
+plt.ylabel("Output Value")
+plt.title("Neural Network Predictions vs. Actual Values")
+plt.show()
