@@ -33,11 +33,11 @@ def forward_propagation(X):
     Z2 = np.dot(A1, W2) + b2  # Weighted sum
     A2 = sigmoid(Z2)          # Activation function
     
-    return A2  # Final prediction
+    return A1, A2  # Final prediction
 
 # Sample Input (2 features per example)
 X_sample = np.array([[0.5, 0.8]])  # Example input
-output = forward_propagation(X_sample)
+A1, output = forward_propagation(X_sample)
 
 print("Network Output:", output)
 
@@ -53,3 +53,39 @@ y_sample = np.array([[1]])  # Expected output
 # Compute loss for the sample input
 loss = compute_loss(y_sample, output)
 print("Loss:", loss)
+
+# Learning rate (α)
+learning_rate = 0.1
+
+# Backpropagation: Adjust weights based on gradients
+def backpropagation(X, y_true, A1, y_pred):
+    global W1, b1, W2, b2  # Use global weights
+
+    # Compute Gradients
+    dA2 = y_pred - y_true  # Gradient of output layer
+    dW2 = np.dot(A1.T, dA2) / X.shape[0]  # Gradient of W2
+    db2 = np.sum(dA2, axis=0, keepdims=True) / X.shape[0]  # Gradient of b2
+
+    dA1 = np.dot(dA2, W2.T) * A1 * (1 - A1)  # Gradient of hidden layer (Sigmoid Derivative)
+    dW1 = np.dot(X.T, dA1) / X.shape[0]  # Gradient of W1
+    db1 = np.sum(dA1, axis=0, keepdims=True) / X.shape[0]  # Gradient of b1
+
+    # Update Weights
+    W1 -= learning_rate * dW1
+    b1 -= learning_rate * db1
+    W2 -= learning_rate * dW2
+    b2 -= learning_rate * db2
+
+# Training Loop
+epochs = 100
+
+for epoch in range(epochs):
+    A1, y_pred = forward_propagation(X_sample)  # Forward pass
+    loss = compute_loss(y_sample, y_pred)  # Compute loss
+    backpropagation(X_sample, y_sample, A1, y_pred)  # Update weights
+    
+    # Print loss every 10 epochs
+    if (epoch + 1) % 10 == 0:
+        print(f"Epoch {epoch+1}/{epochs}, Loss: {loss:.4f}")
+
+print("Training Complete!")
